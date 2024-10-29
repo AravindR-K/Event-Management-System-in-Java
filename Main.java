@@ -2,6 +2,19 @@ package Draft_4;
 
 import java.util.*;
 
+/**
+ * The IntervalTree class is a data structure that manages a collection of events,
+ * where each event has a specific time interval and location.
+ * It provides methods to add, modify, delete, and display events, as well as
+ * find free time slots in a given location.
+ *
+ * The key features of the IntervalTree class are:
+ * - Efficient management of event overlaps and conflicts
+ * - Prioritization of events based on their priority level
+ * - Automatic rescheduling of conflicting events
+ * - Ability to display scheduled events and free time slots for a given location
+ */
+
 class Interval implements Comparable<Interval> {
     int start, end;
 
@@ -64,6 +77,16 @@ class IntervalTree {
         locationMap.put("Outdoor Garden", new TreeMap<>());
     }
 
+    /*
+     * Adds an event to the IntervalTree.
+     * Time Complexity: O(n log n), where n is the number of events in the given location.
+     * This is due to the TreeMap used to store events, which provides logarithmic time
+     * for insertion, deletion, and lookup operations.
+     *
+     * @param event The event to be added
+     * @return true if the event was successfully added, false otherwise
+     */
+
     public boolean addEvent(Event event) {
         String trimmedLocation = event.location.trim();
 
@@ -94,6 +117,15 @@ class IntervalTree {
         return true;
     }
 
+    /**
+     * Reschedules an event to the earliest available time slot.
+     * Time Complexity: O(n log n), where n is the number of events in the given location.
+     * This is due to the TreeMap used to store events, which provides logarithmic time
+     * for insertion, deletion, and lookup operations.
+     *
+     * @param event The event to be rescheduled
+     * @return true if the event was successfully rescheduled, false otherwise
+     */
 
     private boolean rescheduleEvent(Event event) {
         TreeMap<Interval, Event> locationEvents = locationMap.get(event.location);
@@ -122,6 +154,17 @@ class IntervalTree {
         return false;
     }
 
+    /**
+     * Retrieves the earliest available time slot in a given location.
+     * Time Complexity: O(log n), where n is the number of events in the given location.
+     * This is due to the TreeMap used to store events, which provides logarithmic time
+     * for lookup operations.
+     *
+     * @param startTime The starting time to search for available slots
+     * @param location The location to search for available slots
+     * @return The earliest available time slot
+     */
+
     private int getEarliestAvailableTime(int startTime, String location) {
         TreeMap<Interval, Event> locationEvents = locationMap.get(location);
         for (Interval interval : locationEvents.keySet()) {
@@ -131,6 +174,16 @@ class IntervalTree {
         }
         return startTime;
     }
+
+    /**
+     * Retrieves the events scheduled in a given location.
+     * Time Complexity: O(k), where k is the number of events in the given location.
+     * This is due to the TreeMap used to store events, which provides constant time
+     * for retrieving all the entries.
+     *
+     * @param location The location to retrieve the scheduled events
+     * @return A TreeMap of the scheduled events in the given location
+     */
 
     public TreeMap<Interval, Event> getLocationEvents(String location) {
         return locationMap.getOrDefault(location, new TreeMap<>()); 
@@ -147,6 +200,16 @@ class IntervalTree {
             }
         }
     }
+
+    /**
+     * Displays the free time slots in a given location for a specific day.
+     * Time Complexity: O(k log k), where k is the number of events in the given location.
+     * This is due to the TreeMap used to store events, which provides logarithmic time
+     * for iterating over the entries, and the printing of the free slots takes linear time.
+     *
+     * @param location The location to display the free time slots
+     * @param day The day to display the free time slots
+     */
 
     public void displayFreeSlots(String location, int day) {
         TreeMap<Interval, Event> locationEvents = locationMap.get(location);
@@ -165,6 +228,17 @@ class IntervalTree {
         }
     }
 
+    /**
+     * Modifies an existing event in the IntervalTree.
+     * Time Complexity: O(n log n), where n is the number of events in the IntervalTree.
+     * This is due to the need to remove the old event and add the new event, which both
+     * take logarithmic time in the TreeMap.
+     *
+     * @param eventID The ID of the event to be modified
+     * @param newInterval The new time interval for the event
+     * @return true if the event was successfully modified, false otherwise
+     */
+
     public boolean modifyEvent(int eventID, Interval newInterval) {
         for (TreeMap<Interval, Event> events : locationMap.values()) {
             for (Event event : events.values()) {
@@ -178,6 +252,16 @@ class IntervalTree {
         System.out.println("Event not found.");
         return false;
     }
+
+    /**
+     * Deletes an event from the IntervalTree.
+     * Time Complexity: O(log n), where n is the number of events in the given location.
+     * This is due to the TreeMap used to store events, which provides logarithmic time
+     * for deletion operations.
+     *
+     * @param eventID The ID of the event to be deleted
+     * @return true if the event was successfully deleted, false otherwise
+     */
 
     public boolean deleteEvent(int eventID) {
         for (TreeMap<Interval, Event> events : locationMap.values()) {
