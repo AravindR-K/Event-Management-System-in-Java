@@ -65,10 +65,8 @@ class IntervalTree {
     }
 
     public boolean addEvent(Event event) {
-        // Trim the location input to avoid issues with extra spaces
         String trimmedLocation = event.location.trim();
 
-        // Check if the location exists in the map
         if (!locationMap.containsKey(trimmedLocation)) {
             System.out.println("Location '" + trimmedLocation + "' does not exist. Please select a valid location.");
             return false;
@@ -92,7 +90,6 @@ class IntervalTree {
             }
         }
 
-        // No conflict, add the event
         locationEvents.put(event.interval, event);
         return true;
     }
@@ -136,7 +133,7 @@ class IntervalTree {
     }
 
     public TreeMap<Interval, Event> getLocationEvents(String location) {
-        return locationMap.getOrDefault(location, new TreeMap<>()); // Return the events for the specified location
+        return locationMap.getOrDefault(location, new TreeMap<>()); 
     }
 
     public void displayEvents(String location) {
@@ -207,22 +204,6 @@ class EventManager {
             days[i] = new IntervalTree();
         }
     }
-
-//    public void addEvent(String title, String description, String location, int priority, Interval interval, boolean isRecurring, int recurringDays) {
-//        if (isRecurring) {
-//            for (int i = 0; i < recurringDays; i++) {
-//                Event event = new Event(nextEventID++, title, description, location, priority, interval, isRecurring, recurringDays);
-//                if (!days[i].addEvent(event)) {
-//                    System.out.println("Conflict detected for day " + (i + 1) + ".");
-//                }
-//            }
-//        } else {
-//            Event event = new Event(nextEventID++, title, description, location, priority, interval, isRecurring, 1);
-//            if (!days[0].addEvent(event)) {
-//                System.out.println("Conflict detected for day 1.");
-//            }
-//        }
-//    }
 
     public void addEvent(String title, String description, String location, int priority, Interval interval, boolean isRecurring, int recurringDays, int day) {
         if (isRecurring) {
@@ -308,7 +289,7 @@ class Main {
         System.out.print("How many days would you like to schedule events for? ");
         int totalDays = scanner.nextInt();
 
-        EventManager manager = new EventManager(totalDays); // Assuming EventManager and Interval classes exist
+        EventManager manager = new EventManager(totalDays); 
         int choice;
 
         do {
@@ -321,7 +302,7 @@ class Main {
             System.out.println("6. Exit");
             System.out.print("Your choice: ");
             choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine(); 
 
             switch (choice) {
                 case 1:
@@ -348,7 +329,7 @@ class Main {
                     } else {
                         System.out.print("Enter the day (Day 1, Day 2, etc.): ");
                         days = scanner.nextInt();
-                        // Adjust day for 0-based index
+    
                     }
                     manager.addEvent(title, desc, location, priority, new Interval(startTime, endTime), isRecurring, recurringDays, days - 1);
                     System.out.println("Event added successfully... or was it?");
