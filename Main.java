@@ -1,4 +1,93 @@
-package Duplicate;
+/*
+Event Management System
+This Java program implements an Event Management System that allows users to schedule,
+modify, delete, and display events. The system supports both single and recurring events,
+and it manages conflicts based on event priorities using an interval tree data structure.
+Key Features:
+Add events with details such as title, description, duration, start time, end time, and priority.
+Support for recurring events with the ability to schedule them across multiple days.
+Conflict detection and resolution based on event priorities, allowing users to either choose a new time slot
+or attempt to reschedule conflicting events.
+Display available time slots for scheduling events based on user-defined daily start and end times.
+Delete events, including the option to remove all occurrences of a recurring event or just a single instance.
+Modify existing events, including changing their title, description, duration, time slot, and priority.
+The program utilizes Java's LocalDateTime and Duration classes for time management and employs
+an interval tree to efficiently handle event scheduling and conflict resolution.
+Author: Aadhikesh,Vinayak kanagaraj, Aravind, Jaikrishna.
+Date: 04.11.2024
+*/
+
+/*
+ADT for Event Management System
+
+1. Event
+Description: Represents an event with details such as title, description, duration, start time, end time, priority, and recurrence status.
+
+Operations:
+
+Event(eventId: String, title: String, description: String, duration: Duration, startTime: LocalDateTime, endTime: LocalDateTime, priority: int, isRecurring: boolean): Constructor to create a new event.
+String getEventId(): Returns the event ID.
+String getTitle(): Returns the title of the event.
+void setTitle(String title): Sets the title of the event.
+String getDescription(): Returns the description of the event.
+void setDescription(String description): Sets the description of the event.
+Duration getDuration(): Returns the duration of the event.
+void setDuration(Duration duration): Sets the duration of the event.
+LocalDateTime getStartTime(): Returns the start time of the event.
+void setStartTime(LocalDateTime startTime): Sets the start time of the event.
+LocalDateTime getEndTime(): Returns the end time of the event.
+void setEndTime(LocalDateTime endTime): Sets the end time of the event.
+int getPriority(): Returns the priority of the event.
+void setPriority(int priority): Sets the priority of the event.
+boolean isRecurring(): Returns whether the event is recurring.
+
+2. IntervalNode
+Description: Represents a node in the interval tree, containing an event and pointers to its children.
+
+Operations:
+
+IntervalNode(Event event): Constructor to create a new interval node.
+Event getEvent(): Returns the event associated with this node.
+LocalDateTime getMax(): Returns the maximum end time in the subtree.
+IntervalNode getLeft(): Returns the left child node.
+IntervalNode getRight(): Returns the right child node.
+
+3. IntervalTree
+Description: A binary search tree that manages events based on their start and end times, allowing for efficient scheduling and conflict detection.
+
+Operations:
+
+IntervalTree(): Constructor to create a new interval tree.
+boolean insert(Event event): Inserts a new event into the tree. Returns false if the event ID already exists.
+boolean hasOverlap(Event newEvent): Checks if the new event overlaps with any existing events.
+void delete(String eventId): Deletes an event from the tree based on its event ID.
+List<TimeSlot> findFreeSlots(LocalDateTime dayStart, LocalDateTime dayEnd, Duration minDuration): Finds and returns a list of free time slots within a specified time range.
+List<Event> getAllEvents(): Returns a list of all events stored in the interval tree.
+
+4. TimeSlot
+Description: Represents a time slot with a start and end time.
+
+Operations:
+
+TimeSlot(LocalDateTime start, LocalDateTime end): Constructor to create a new time slot.
+LocalDateTime getStart(): Returns the start time of the time slot.
+LocalDateTime getEnd(): Returns the end time of the time slot.
+5. EventManagementSystem
+Description: The main class that manages the event scheduling system, including user interactions and event management.
+
+Operations:
+
+EventManagementSystem(): Constructor to initialize the event management system.
+void initialize(): Initializes the system by prompting the user for locations, number of days, and daily start and end times.
+void showMenu(): Displays the main menu and handles user input for various operations.
+void addEvent(): Prompts the user to enter details for a new event and schedules it.
+void deleteEvent(): Deletes an event based on user input.
+void modifyEvent(): Modifies an existing event based on user input.
+void displayEvents(): Displays all scheduled events.
+void displayFreeSlots(LocalDate date, Duration duration): Displays available time slots for scheduling events.
+*/
+
+
 
 import java.time.*;
 import java.time.format.*;
@@ -71,6 +160,7 @@ class IntervalTree {
     }
 
     // Insert a new event into the tree
+    // Inserts a new event into the interval tree. Returns false if the event ID already exists; otherwise, it adds the event and returns true.
     public boolean insert(Event event) {
         if (eventIds.contains(event.getEventId())) {
             return false; // Don't insert if event ID already exists
@@ -80,6 +170,7 @@ class IntervalTree {
         return true;
     }
 
+    //Recursive helper method to insert an event into the correct position in the tree based on the event's start time.
     private IntervalNode insert(IntervalNode node, Event event) {
         if (node == null) {
             return new IntervalNode(event);
@@ -101,11 +192,11 @@ class IntervalTree {
         return node;
     }
 
-    // Check if there's any overlap with existing events
+    // Function for checking if there's any overlap with existing events returns True if there exists any
     public boolean hasOverlap(Event newEvent) {
         return searchOverlap(root, newEvent);
     }
-
+    //  Recursive method to search for overlapping events in the tree.
     private boolean searchOverlap(IntervalNode node, Event event) {
         if (node == null) return false;
 
@@ -120,6 +211,7 @@ class IntervalTree {
         return searchOverlap(node.right, event);
     }
 
+    // Determines if two events overlap based on their start and end times.
     private boolean overlaps(Event e1, Event e2) {
         return !(e1.getEndTime().isBefore(e2.getStartTime()) ||
                 e2.getEndTime().isBefore(e1.getStartTime()));
@@ -169,7 +261,7 @@ class IntervalTree {
     }
 
 
-
+    //Finds and returns a list of free time slots within a specified time range that can accommodate a minimum duration.
     public List<TimeSlot> findFreeSlots(LocalDateTime dayStart, LocalDateTime dayEnd, Duration minDuration) {
         List<Event> events = new ArrayList<>();
         collectEvents(root, events);
@@ -266,6 +358,7 @@ public class EventManagementSystem {
         this.scanner = new Scanner(System.in);
     }
 
+    //Initializes the system by prompting the user for locations, the number of days for events, and daily start and end times.
     public void initialize() {
         System.out.println("Enter locations (comma-separated):");
         String[] locs = scanner.nextLine().split(",");
@@ -288,6 +381,7 @@ public class EventManagementSystem {
         }
     }
 
+    // Displays the main menu and handles user input for various operations such as adding, deleting, modifying, and displaying events.
     public void showMenu() {
         while (true) {
             System.out.println("\n=== Event Management System ===");
@@ -322,6 +416,7 @@ public class EventManagementSystem {
         }
     }
 
+    // Prompts the user to enter details for a new event and schedules it, either as a single or recurring event.
     private void addEvent() {
         System.out.println("\nAdding New Event");
         System.out.println("Enter Event ID:");
@@ -353,6 +448,7 @@ public class EventManagementSystem {
         }
     }
 
+    // Schedules a single event for a selected day, checking for free slots and conflicts.
     private void scheduleSingleEvent(String eventId, String title, String description,
                                      Duration duration, int priority) {
         System.out.println("\nAvailable days:");
@@ -380,6 +476,7 @@ public class EventManagementSystem {
         }
     }
 
+    // Schedules a recurring event for multiple days, allowing the user to specify start times for each occurrence.
     private void scheduleRecurringEvent(String eventId, String title, String description,
                                         Duration duration, int priority) {
         System.out.println("\nSchedule recurring event for each day:");
@@ -407,6 +504,7 @@ public class EventManagementSystem {
         }
     }
 
+    //Checks for conflicts with an event and attempts to schedule it if no conflicts are found.
     private boolean checkAndScheduleEvent(LocalDate date, Event newEvent) {
         IntervalTree tree = dailyEvents.get(date);
 
@@ -423,6 +521,7 @@ public class EventManagementSystem {
         return true;
     }
 
+    // Handles conflicts by allowing the user to choose a new time slot, attempt to reschedule conflicting events, or cancel scheduling.
     private boolean handleConflict(LocalDate date, Event newEvent) {
         System.out.println("Would you like to:");
         System.out.println("1. Choose another time slot");
@@ -448,8 +547,7 @@ public class EventManagementSystem {
         }
     }
 
-
-
+    // Attempts to reschedule conflicting events based on priority and available time slots.
     private boolean tryRescheduleConflicts(LocalDate date, Event newEvent) {
         IntervalTree tree = dailyEvents.get(date);
         List<Event> conflicts = findConflictingEvents(date, newEvent);
